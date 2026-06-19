@@ -1,0 +1,278 @@
+<?xml version="1.0"?>
+<!--
+  강의실 Gazebo Harmonic 환경 (SDF 1.8)  — ROS2 Jazzy
+  좌석 배치:
+    A1 (2.0,  2.5)   A2 (2.0, -2.5)
+    B1 (-2.0, 2.5)   B2 (-2.0, -2.5)
+
+  A1·A2·B1 학생: 정적 box
+  B2 학생: 빨간 box (없앤 후 다시 넣어서 대리출석 시나리오 수동 테스트 가능)
+  TurtleBot3 스폰: launch 파일에서 처리 (x=-4.5, y=0)
+-->
+<sdf version="1.8">
+  <world name="classroom">
+
+    <physics type="ode">
+      <real_time_update_rate>1000.0</real_time_update_rate>
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1</real_time_factor>
+    </physics>
+
+    <!-- Gazebo Harmonic 필수 시스템 플러그인 -->
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-sensors-system"
+            name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-imu-system"
+            name="gz::sim::systems::Imu"/>
+
+    <!-- 조명 -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.5 0.1 -0.9</direction>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+    </light>
+
+    <!-- 바닥 -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="col">
+          <geometry>
+            <plane><normal>0 0 1</normal><size>50 50</size></plane>
+          </geometry>
+        </collision>
+        <visual name="vis">
+          <geometry>
+            <plane><normal>0 0 1</normal><size>50 50</size></plane>
+          </geometry>
+          <material>
+            <ambient>0.8 0.8 0.8 1</ambient>
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ── 강의실 벽 (10m × 8m) ───────────────────────────────────── -->
+
+    <model name="wall_front">
+      <static>true</static>
+      <pose>5.0 0.0 1.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.2 8.0 3.0</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.2 8.0 3.0</size></box></geometry>
+          <material><ambient>0.9 0.9 0.8 1</ambient><diffuse>0.9 0.9 0.8 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_back">
+      <static>true</static>
+      <pose>-5.0 0.0 1.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.2 8.0 3.0</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.2 8.0 3.0</size></box></geometry>
+          <material><ambient>0.9 0.9 0.8 1</ambient><diffuse>0.9 0.9 0.8 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_left">
+      <static>true</static>
+      <pose>0.0 4.0 1.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>10.0 0.2 3.0</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>10.0 0.2 3.0</size></box></geometry>
+          <material><ambient>0.9 0.9 0.8 1</ambient><diffuse>0.9 0.9 0.8 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_right">
+      <static>true</static>
+      <pose>0.0 -4.0 1.5 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>10.0 0.2 3.0</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>10.0 0.2 3.0</size></box></geometry>
+          <material><ambient>0.9 0.9 0.8 1</ambient><diffuse>0.9 0.9 0.8 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ── 책상 4개 ──────────────────────────────────────────────── -->
+
+    <model name="desk_A1">
+      <static>true</static>
+      <pose>2.0 2.5 0.4 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.8 0.6 0.05</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.8 0.6 0.05</size></box></geometry>
+          <material><ambient>0.6 0.4 0.2 1</ambient><diffuse>0.6 0.4 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="desk_A2">
+      <static>true</static>
+      <pose>2.0 -2.5 0.4 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.8 0.6 0.05</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.8 0.6 0.05</size></box></geometry>
+          <material><ambient>0.6 0.4 0.2 1</ambient><diffuse>0.6 0.4 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="desk_B1">
+      <static>true</static>
+      <pose>-2.0 2.5 0.4 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.8 0.6 0.05</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.8 0.6 0.05</size></box></geometry>
+          <material><ambient>0.6 0.4 0.2 1</ambient><diffuse>0.6 0.4 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="desk_B2">
+      <static>true</static>
+      <pose>-2.0 -2.5 0.4 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.8 0.6 0.05</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.8 0.6 0.05</size></box></geometry>
+          <material><ambient>0.6 0.4 0.2 1</ambient><diffuse>0.6 0.4 0.2 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ── 학생 모델 (visual-only, collision 없음) ───────────────────
+         collision 없음 → LiDAR 통과, Nav2 경로 막히지 않음
+         visual 있음  → 카메라에 사람 형태로 보임 → YOLOv8 person 감지
+         yaw: A1/A2 = π (학생이 -x 방향, 즉 로봇 쪽을 바라봄)
+               B1    = 0  (학생이 +x 방향, 즉 로봇 쪽을 바라봄)
+         B2 좌석은 비워둠 → "결석" 시나리오
+    ─────────────────────────────────────────────────────────────── -->
+
+    <!-- A1: 착석 (로봇 쪽 바라봄) -->
+    <model name="student_A1">
+      <static>true</static>
+      <pose>2.0 2.5 0.0 0 0 3.14159</pose>
+      <link name="link">
+        <visual name="visual">
+          <pose>0 0 0.02 0.04 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/standing person/3/files/meshes/standing.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!-- A2: 착석 (로봇 쪽 바라봄) -->
+    <model name="student_A2">
+      <static>true</static>
+      <pose>2.0 -2.5 0.0 0 0 3.14159</pose>
+      <link name="link">
+        <visual name="visual">
+          <pose>0 0 0.02 0.04 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/standing person/3/files/meshes/standing.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!-- B1: 지각 착석 (로봇 쪽 바라봄) -->
+    <model name="student_B1">
+      <static>true</static>
+      <pose>-2.0 2.5 0.0 0 0 0.0</pose>
+      <link name="link">
+        <visual name="visual">
+          <pose>0 0 0.02 0.04 0 0</pose>
+          <geometry>
+            <mesh>
+              <uri>https://fuel.gazebosim.org/1.0/openrobotics/models/standing person/3/files/meshes/standing.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!--
+      B2: 동적 학생 (Gazebo Actor)
+      시나리오: 일시적으로 자리를 비우는 상황 시뮬레이션
+        - 0~10s  : B2 좌석(-2.0, -2.5)에 착석
+        - 10~20s : 강의실 중앙(0.0, -2.5)으로 이동 (자리 비움)
+        - 20~30s : 중앙에서 대기
+        - 30~40s : B2 좌석으로 복귀
+        - 반복 (40초 주기)
+      → 1차 순찰 시 자리 비움 감지 → 재확인 대상
+      → 2/3차 순찰 시 복귀 여부에 따라 출석 정정 or 대리출석 의심
+    -->
+    <actor name="student_b2">
+      <pose>-2.0 -2.5 0 0 0 0</pose>
+      <skin>
+        <filename>https://fuel.gazebosim.org/1.0/openrobotics/models/walking person/3/files/meshes/walking.dae</filename>
+        <scale>1.0</scale>
+      </skin>
+      <script>
+        <loop>true</loop>
+        <delay_start>0</delay_start>
+        <auto_start>true</auto_start>
+        <trajectory id="0" type="walk">
+          <!-- 착석 중 (제자리) -->
+          <waypoint>
+            <time>0</time>
+            <pose>-2.0 -2.5 0 0 0 0</pose>
+          </waypoint>
+          <waypoint>
+            <time>10</time>
+            <pose>-2.0 -2.5 0 0 0 0</pose>
+          </waypoint>
+          <!-- 자리 비움: 강의실 중앙으로 이동 -->
+          <waypoint>
+            <time>20</time>
+            <pose>0.0 -2.5 0 0 0 3.14159</pose>
+          </waypoint>
+          <!-- 중앙 대기 -->
+          <waypoint>
+            <time>30</time>
+            <pose>0.0 -2.5 0 0 0 3.14159</pose>
+          </waypoint>
+          <!-- 좌석으로 복귀 -->
+          <waypoint>
+            <time>40</time>
+            <pose>-2.0 -2.5 0 0 0 0</pose>
+          </waypoint>
+        </trajectory>
+      </script>
+    </actor>
+
+  </world>
+</sdf>

@@ -6,15 +6,15 @@ setup(
     data_files=[
         ('share/ament_index/resource_index/packages', ['resource/basics']),
         ('share/basics', ['package.xml']),
-        ('share/basics/launch', ['launch/talker_listener.launch.py']),
+        ('share/basics/launch', ['launch/pub_sub.launch.py']),
     ],
     install_requires=['setuptools'],
     maintainer='Daeun Song',
     maintainer_email='songd@ewha.ac.kr',
     entry_points={
         'console_scripts': [
-            'talker = basics.talker:main',
-            'listener = basics.listener:main',
+            'publisher = basics.publisher:main',
+            'subscriber = basics.subscriber:main',
         ],
     },
 )
