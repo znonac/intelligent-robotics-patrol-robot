@@ -210,11 +210,11 @@ Claude AI (Anthropic)를 활용하여 아래 내용을 지원받았습니다:
 
 ## 데모 영상
 
-- YouTube: [링크 추가 필요 — Unlisted(미등록)로 업로드]
+- [https://youtu.be/al8cwplNHZ0?si=SNZjexcQbMGGz-mJ]
 
 ## GitHub
 
-- [링크 추가 필요 (Optional)]
+- [https://github.com/znonac/intelligent-robotics-patrol-robot]
 
 ---
 
